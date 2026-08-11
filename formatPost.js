@@ -1,23 +1,22 @@
-// Turns a list of { sourceName, title, link } items into one Telegram message.
-// Telegram messages support basic HTML formatting when parse_mode is "HTML".
-function formatDailyDigest(items) {
-  if (!items.length) return null;
+// Template 5A — bold header + bullet points per item.
+// No source links/buttons. Bolds the tool/company name. Adds hashtags +
+// an emoji reaction prompt at the end.
 
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
+function formatDailyDigest(summarizedItems) {
+  if (!summarizedItems.length) return null;
+
+  let message = `🤖⚡ <b>AI TOOLS UPDATE</b>\n\n`;
+
+  summarizedItems.forEach((item) => {
+    message += `▸ <b>${escapeHtml(item.toolName)}</b>\n`;
+    item.bullets.forEach((bullet) => {
+      message += `  • ${escapeHtml(bullet)}\n`;
+    });
+    message += `\n`;
   });
 
-  let message = `🤖 <b>AI Tools & News — ${today}</b>\n\n`;
-
-  items.forEach((item, i) => {
-    message += `${i + 1}. <b>${escapeHtml(item.title)}</b>\n`;
-    message += `   📰 ${escapeHtml(item.sourceName)}\n`;
-    message += `   🔗 <a href="${item.link}">Read more</a>\n\n`;
-  });
-
-  message += `Follow for daily AI tool drops 🚀`;
+  message += `🔥 React if this was useful\n`;
+  message += `#AI #AITools #TechNews #Automation`;
 
   return message;
 }
