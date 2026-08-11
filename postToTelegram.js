@@ -11,30 +11,36 @@ function getCreds() {
   return { token, channelId };
 }
 
-// Posts the digest. If an image URL is provided, sends it first as a small
-// header photo (short caption, well under Telegram's 1024-char photo-caption
-// limit), then sends the full digest as its own text message (4096-char
-// limit) right after — so the image always shows regardless of digest length.
+// Posts the digest. Image is mandatory — sent first as a small header photo
+// (short caption, well under Telegram's 1024-char photo-caption limit), then
+// the full digest follows as its own text message (4096-char limit). If the
+// primary image URL fails to send, retries once with a themed fallback image
+// so a post never goes out without one.
 async function postToChannel(message, imageUrl) {
   const { token, channelId } = getCreds();
 
-  if (imageUrl) {
-    try {
-      const photoRes = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: channelId,
-          photo: imageUrl,
-          caption: "🤖⚡ AI Tools Update",
-        }),
-      });
-      const photoData = await photoRes.json();
-      if (!photoData.ok) {
-        console.error(`[postToTelegram] sendPhoto failed: ${photoData.description}`);
-      }
-    } catch (err) {
-      console.error(`[postToTelegram] sendPhoto error: ${err.message}`);
+  const trySendPhoto = async (url) => {
+    const photoRes = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: channelId,
+        photo: url,
+        caption: "🤖⚡ AI Tools Update",
+      }),
+    });
+    return photoRes.json();
+  };
+
+  let photoData = await trySendPhoto(imageUrl).catch((err) => ({ ok: false, description: err.message }));
+
+  if (!photoData.ok) {
+    console.error(`[postToTelegram] sendPhoto failed for primary image: ${photoData.description}`);
+    const { pickFallbackImage } = require("./articleReader");
+    const fallback = pickFallbackImage();
+    photoData = await trySendPhoto(fallback).catch((err) => ({ ok: false, description: err.message }));
+    if (!photoData.ok) {
+      console.error(`[postToTelegram] sendPhoto failed for fallback image too: ${photoData.description}`);
     }
   }
 

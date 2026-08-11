@@ -1,5 +1,5 @@
 const { fetchRecentItems, pickRandom } = require("./fetchContent");
-const { fetchArticle } = require("./articleReader");
+const { fetchArticle, pickFallbackImage } = require("./articleReader");
 const { summarizeArticle } = require("./summarizer");
 const { formatDailyDigest } = require("./formatPost");
 const { postToChannel } = require("./postToTelegram");
@@ -8,7 +8,7 @@ const MIN_ITEMS = 3;
 const MAX_ITEMS = 5;
 
 // Full pipeline: fetch RSS pool -> pick 3-5 random items -> read + summarize
-// each with Claude -> format Template 5A digest -> post (with header image).
+// each with Gemini -> format Template 5A digest -> post (always with an image).
 async function runDigest() {
   const pool = await fetchRecentItems();
   if (!pool.length) {
@@ -39,10 +39,14 @@ async function runDigest() {
     return { posted: false, reason: "No items could be summarized." };
   }
 
+  // Image is mandatory on every post — use a themed fallback if none of the
+  // articles yielded a valid image.
+  if (!headerImage) headerImage = pickFallbackImage();
+
   const message = formatDailyDigest(summarized);
   await postToChannel(message, headerImage);
 
-  return { posted: true, itemCount: summarized.length };
+  return { posted: true, itemCount: summarized.length, usedFallbackImage: !headerImage };
 }
 
 module.exports = { runDigest };
