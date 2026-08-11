@@ -1,13 +1,12 @@
 # AI Tools Telegram Bot
 
 Posts an AI-summarized digest of 3-5 random AI tool/news articles to your
-Telegram channel, twice a day at a randomized time within each 12-hour
-window (so it's not always the exact same time).
+Telegram channel, twice a day (9 AM and 9 PM UTC by default).
 
 Each post: reads the full article, summarizes it into a few short bullet
-points via Claude, bolds the tool/company name, attaches a header image
-pulled from the article, and adds hashtags + a reaction prompt. No source
-links — just the summary.
+points via Gemini, bolds the tool/company name, attaches a header image
+pulled from the article (or a themed fallback if none is found), and adds
+hashtags + a reaction prompt. No source links — just the summary.
 
 ## Setup
 
@@ -51,21 +50,15 @@ Add a cron job (via `crontab -e` or Termux's `cronie`):
 3. Add `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, and `GEMINI_API_KEY` as environment variables (check Production + Preview).
 4. Deploy.
 
-**How the twice-daily random timing works:** Vercel Cron can only fire on a
-fixed schedule, not a random one, so `vercel.json` schedules `/api/post` to
-run **every hour** (`0 * * * *`). Inside `scheduler.js`, the function checks
-whether the *current* hour is the one randomly chosen for that 12-hour
-window (00:00-11:59 or 12:00-23:59 UTC) — so it silently skips 22 out of 24
-hourly triggers and actually posts on the other 2, at a time that shifts
-day to day.
+**Schedule:** `vercel.json` defines two separate daily cron entries (9 AM
+and 9 PM UTC) — each one only runs once per day, which fits Vercel's
+Hobby/free-tier limit (cron jobs on Hobby can't run more than once/day
+*per entry*, but you can have multiple entries). Edit the two schedule
+strings in `vercel.json` to change the times. Note Hobby-tier timing has
+up to ±59 min of drift — exact-minute precision needs the Pro plan.
 
-> Note: hourly cron invocations may require a Vercel **Pro** plan depending
-> on your account's cron limits — check your dashboard's Cron Jobs section.
-> If you're capped on the free tier, drop to a fixed 2x/day schedule instead,
-> e.g. `"0 9,21 * * *"`, and delete the `isRandomPostHour` check in `api/post.js`.
-
-You can manually trigger a post (bypassing the hourly gate) by visiting
-`https://your-project.vercel.app/api/post?force=1`.
+You can manually trigger a post any time by visiting
+`https://your-project.vercel.app/api/post`.
 
 ## Customizing content sources
 

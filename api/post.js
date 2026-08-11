@@ -1,18 +1,10 @@
-// Vercel serverless function, triggered hourly by Vercel Cron.
-// Only actually posts during the one randomly-chosen hour per 12hr window
-// (see scheduler.js) — so it ends up posting twice a day at a time that
-// shifts daily, without needing any external state/storage.
+// Vercel serverless function, triggered by two daily crons (see vercel.json).
+// Hobby plan only allows cron jobs that run once/day each, so instead of one
+// hourly cron with random gating, we use two separate once-daily crons —
+// that's within the free-tier limit and still gives 2 posts/day.
 const { runDigest } = require("../runDigest");
-const { isRandomPostHour } = require("../scheduler");
 
 module.exports = async (req, res) => {
-  // Allow ?force=1 for manual testing, bypassing the hourly gate.
-  const force = req.query?.force === "1";
-
-  if (!force && !isRandomPostHour()) {
-    return res.status(200).json({ ok: true, skipped: true, reason: "Not this hour's chosen slot." });
-  }
-
   try {
     const result = await runDigest();
     res.status(200).json({ ok: true, ...result });
