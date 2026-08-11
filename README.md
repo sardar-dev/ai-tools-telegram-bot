@@ -28,8 +28,8 @@ links — just the summary.
    ```bash
    cp .env.example .env
    ```
-   Fill in `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, and `ANTHROPIC_API_KEY` in `.env`.
-   Get an Anthropic API key at [console.anthropic.com](https://console.anthropic.com).
+   Fill in `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, and `GEMINI_API_KEY` in `.env`.
+   Get a free Gemini API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
 
 ## Run manually (local / Termux)
 
@@ -48,7 +48,7 @@ Add a cron job (via `crontab -e` or Termux's `cronie`):
 ### Option B — Vercel (recommended, no device needed)
 1. Push this folder to a GitHub repo.
 2. Import it into [Vercel](https://vercel.com), Framework Preset: **Other**.
-3. Add `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, and `ANTHROPIC_API_KEY` as environment variables (check Production + Preview).
+3. Add `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, and `GEMINI_API_KEY` as environment variables (check Production + Preview).
 4. Deploy.
 
 **How the twice-daily random timing works:** Vercel Cron can only fire on a
