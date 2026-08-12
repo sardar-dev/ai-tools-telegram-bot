@@ -20,6 +20,7 @@ async function runDigest() {
 
   const summarized = [];
   let headerImage = "";
+  const errors = [];
 
   for (const item of picked) {
     const { text, image } = await fetchArticle(item.link);
@@ -32,11 +33,12 @@ async function runDigest() {
       }
     } catch (err) {
       console.error(`[runDigest] Summarization failed for "${item.title}": ${err.message}`);
+      errors.push(err.message);
     }
   }
 
   if (!summarized.length) {
-    return { posted: false, reason: "No items could be summarized." };
+    return { posted: false, reason: "No items could be summarized.", errors };
   }
 
   // Image is mandatory on every post — use a themed fallback if none of the

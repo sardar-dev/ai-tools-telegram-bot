@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 
-const MODEL = "gemini-2.0-flash"; // fast + free-tier friendly, good for short summaries
+const MODEL = "gemini-3.5-flash-lite"; // current-gen, low-latency, built for high-volume automation
 
 // Summarizes one article into: { toolName, bullets: string[] }.
 // toolName is the AI tool/company/product the article is mainly about (for bolding).
