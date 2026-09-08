@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const FormData = require("form-data");
 
 function getCreds() {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -11,49 +12,24 @@ function getCreds() {
   return { token, channelId };
 }
 
-// Posts the digest. Image is mandatory — sent first as a small header photo
-// (short caption, well under Telegram's 1024-char photo-caption limit), then
-// the full digest follows as its own text message (4096-char limit). If the
-// primary image URL fails to send, retries once with a themed fallback image
-// so a post never goes out without one.
-async function postToChannel(message, imageUrl) {
+// Posts a generated image (raw bytes) with a caption, via multipart upload
+// (no external image URL needed — the image never leaves our own pipeline).
+async function postImage({ buffer, mimeType, caption }) {
   const { token, channelId } = getCreds();
 
-  const trySendPhoto = async (url) => {
-    const photoRes = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: channelId,
-        photo: url,
-        caption: "🤖⚡ AI Tools Update",
-      }),
-    });
-    return photoRes.json();
-  };
+  const form = new FormData();
+  form.append("chat_id", channelId);
+  form.append("caption", caption);
+  form.append("parse_mode", "HTML");
+  form.append("photo", buffer, {
+    filename: `image.${mimeType.split("/")[1] || "png"}`,
+    contentType: mimeType,
+  });
 
-  let photoData = await trySendPhoto(imageUrl).catch((err) => ({ ok: false, description: err.message }));
-
-  if (!photoData.ok) {
-    console.error(`[postToTelegram] sendPhoto failed for primary image: ${photoData.description}`);
-    const { pickFallbackImage } = require("./articleReader");
-    const fallback = pickFallbackImage();
-    photoData = await trySendPhoto(fallback).catch((err) => ({ ok: false, description: err.message }));
-    if (!photoData.ok) {
-      console.error(`[postToTelegram] sendPhoto failed for fallback image too: ${photoData.description}`);
-    }
-  }
-
-  const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  const res = await fetch(url, {
+  const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: channelId,
-      text: message,
-      parse_mode: "HTML",
-      disable_web_page_preview: true,
-    }),
+    body: form,
+    headers: form.getHeaders(),
   });
 
   const data = await res.json();
@@ -63,4 +39,4 @@ async function postToChannel(message, imageUrl) {
   return data;
 }
 
-module.exports = { postToChannel };
+module.exports = { postImage };

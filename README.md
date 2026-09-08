@@ -1,34 +1,29 @@
-# AI Tools Telegram Bot
+# The AI Updates — Telegram Image Bot
 
-Posts an AI-summarized digest of 3-5 random AI tool/news articles to your
-Telegram channel, twice a day (9 AM and 9 PM UTC by default).
+Posts one AI-generated image to your Telegram channel, twice a day (9 AM
+and 9 PM UTC by default), each time in a randomly picked trending style
+(cyberpunk, anime, photorealism, watercolor, etc — see `styles.js`).
 
-Each post: reads the full article, summarizes it into a few short bullet
-points via Gemini, bolds the tool/company name, attaches a header image
-pulled from the article (or a themed fallback if none is found), and adds
-hashtags + a reaction prompt. No source links — just the summary.
+**How each post is made:**
+1. A random style is picked from `styles.js`.
+2. Gemini writes a creative, detailed image prompt in that style.
+3. Gemini's image model generates the actual image from that prompt.
+4. The image is posted with the prompt text as the caption.
 
 ## Setup
 
-1. **Create the bot**
-   - Message [@BotFather](https://t.me/BotFather) on Telegram → `/newbot` → copy the token.
-   - Add the bot as an **admin** to your channel (needed to post).
-
-2. **Get your channel ID**
-   - If your channel is public: use `@yourchannelusername`.
-   - If private: forward a message from it to [@userinfobot](https://t.me/userinfobot) to get the numeric ID (looks like `-1001234567890`).
-
-3. **Install dependencies**
+1. **Create the bot** — message [@BotFather](https://t.me/BotFather) → `/newbot` → copy the token. Add the bot as **admin** to your channel.
+2. **Get your channel ID** — public: `@yourchannelusername`. Private: forward a channel message to [@userinfobot](https://t.me/userinfobot).
+3. **Get a Gemini API key** — free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey). Used for both prompt writing and image generation.
+4. **Install dependencies:**
    ```bash
    npm install
    ```
-
-4. **Configure environment variables**
+5. **Configure environment variables:**
    ```bash
    cp .env.example .env
    ```
-   Fill in `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, and `GEMINI_API_KEY` in `.env`.
-   Get a free Gemini API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
+   Fill in `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, `GEMINI_API_KEY`.
 
 ## Run manually (local / Termux)
 
@@ -36,41 +31,34 @@ hashtags + a reaction prompt. No source links — just the summary.
 node index.js
 ```
 
-## Run on a schedule
+## Run on a schedule (Vercel, recommended)
 
-### Option A — Termux/laptop cron (needs device on at that time)
-Add a cron job (via `crontab -e` or Termux's `cronie`):
-```
-0 9 * * * cd /path/to/ai-tools-bot && node index.js >> log.txt 2>&1
-```
-
-### Option B — Vercel (recommended, no device needed)
 1. Push this folder to a GitHub repo.
 2. Import it into [Vercel](https://vercel.com), Framework Preset: **Other**.
-3. Add `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, and `GEMINI_API_KEY` as environment variables (check Production + Preview).
+3. Add the three env vars above (check Production + Preview).
 4. Deploy.
 
-**Schedule:** `vercel.json` defines two separate daily cron entries (9 AM
-and 9 PM UTC) — each one only runs once per day, which fits Vercel's
-Hobby/free-tier limit (cron jobs on Hobby can't run more than once/day
-*per entry*, but you can have multiple entries). Edit the two schedule
-strings in `vercel.json` to change the times. Note Hobby-tier timing has
-up to ±59 min of drift — exact-minute precision needs the Pro plan.
+`vercel.json` defines two separate daily cron entries (9 AM and 9 PM UTC)
+— each fires once/day, which fits Vercel's Hobby/free-tier cron limit.
+Edit the schedule strings there to change the times.
 
 You can manually trigger a post any time by visiting
 `https://your-project.vercel.app/api/post`.
 
-## Customizing content sources
+## Customizing styles
 
-Edit `sources.js` to add/remove RSS feeds. Each source just needs a `name` and `url`.
+Edit `styles.js` — it's just a list of style descriptors, one is picked at
+random per post. Add, remove, or reweight as trends shift.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `sources.js` | List of RSS feeds to pull from |
-| `fetchContent.js` | Fetches latest item from each source |
-| `formatPost.js` | Formats items into a Telegram HTML message |
-| `postToTelegram.js` | Sends the message via Telegram Bot API |
+| `styles.js` | Pool of trending style descriptors |
+| `promptGenerator.js` | Gemini writes a creative image prompt in a random style |
+| `imageGenerator.js` | Gemini generates the actual image from that prompt |
+| `formatCaption.js` | Builds the Telegram caption (style + prompt + hashtags) |
+| `postToTelegram.js` | Uploads the image + caption to the channel |
+| `runPost.js` | Orchestrates the full pipeline |
 | `index.js` | Local/manual entry point |
 | `api/post.js` | Vercel serverless entry point (used by cron) |
