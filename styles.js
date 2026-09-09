@@ -1,20 +1,21 @@
-// Rotating pool of trending AI image styles. One is picked at random per
-// post. Edit this list over time to keep up with what's actually trending —
-// this file has no other logic, just the list.
+// Rotating pool of AI image styles. One is picked at random per post.
+// Curated from what's actually driving views/shares on TikTok, Instagram,
+// and Pinterest as of 2026 — not generic "art style" guesses. Update this
+// list periodically as trends shift; it's just data, no logic here.
 module.exports = [
-  "cinematic photorealism, dramatic lighting",
-  "Studio Ghibli-inspired anime art",
-  "cyberpunk neon cityscape",
-  "retro 80s synthwave",
-  "hyperrealistic 3D render, octane style",
-  "soft watercolor illustration",
-  "vintage 35mm film photography",
-  "surreal dreamlike digital art",
-  "minimalist flat vector illustration",
-  "dark fantasy concept art",
+  "toy-ification: collectible 3D action figure in blister packaging",
+  "Y2K chrome aesthetic: metallic holographic early-2000s style",
+  "anti-AI nostalgic aesthetic: grainy disposable camera film look, imperfect and candid",
+  "surreal miniature diorama world, tilt-shift, impossibly detailed",
+  "photorealistic double exposure portrait",
+  "digital scrapbook collage: cut-out photos, DIY mixed media, handwritten notes",
+  "satisfying macro texture close-up: glass, jelly, wax, or liquid surfaces",
+  "historical POV cinematic scene, as if witnessed firsthand",
+  "hyperrealistic impossible scene blending the mundane with the surreal",
+  "Studio Ghibli-inspired anime landscape",
+  "cinematic neon cyberpunk streetscape, rain-soaked",
+  "retro-futuristic vintage sci-fi poster art",
   "claymation stop-motion style",
-  "isometric pixel art",
-  "double exposure photography",
-  "art nouveau poster design",
-  "futuristic biopunk design",
+  "isometric pixel art diorama",
+  "dark fantasy concept art",
 ];

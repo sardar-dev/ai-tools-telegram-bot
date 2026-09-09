@@ -19,9 +19,22 @@ async function generateImagePrompt() {
 
   const instruction = `Write one vivid, detailed AI image generation prompt in this style: "${style}".
 
-Pick any interesting subject (a place, creature, scene, object, or abstract concept) —
-be creative and varied. The prompt should be 30-50 words, richly descriptive,
-and ready to feed directly into an image generator.
+This is for a social media channel — the goal is genuine engagement (views,
+likes, shares), not just a technically correct image. Research on what
+actually performs well in this style consistently shows:
+- A strong single subject or clear "hook" the eye lands on immediately —
+  not a busy, unfocused scene.
+- Emotional pull: wonder, nostalgia, humor, or a "wait, is that real?"
+  double-take — flat, purely descriptive scenes underperform.
+- Specific sensory/textural detail (lighting, material, weather, mood) over
+  generic adjectives like "beautiful" or "amazing."
+- 2-3 well-chosen quality tags at most (e.g. "cinematic lighting,
+  ultra-detailed") — stacking many dilutes the effect rather than helping.
+
+Pick any interesting subject (a place, creature, scene, object, or moment) —
+be creative and varied, but make sure it actually fits what makes THIS
+specific style shareable. The prompt should be 30-50 words, richly
+descriptive, and ready to feed directly into an image generator.
 
 Rules:
 - No real named people, celebrities, or copyrighted characters/brands.

@@ -1,12 +1,16 @@
 # The AI Updates — Telegram Image Bot
 
-Posts one AI-generated image to your Telegram channel, twice a day (9 AM
-and 9 PM UTC by default), each time in a randomly picked trending style
-(cyberpunk, anime, photorealism, watercolor, etc — see `styles.js`).
+Posts one AI-generated image to your Telegram channel every 6 hours (4x/day:
+00:00, 06:00, 12:00, 18:00 UTC by default), each time in a randomly picked
+style — curated from what's actually driving engagement on TikTok/Instagram/
+Pinterest (toy-ification, Y2K chrome, nostalgic film grain, surreal miniature
+worlds, etc. — see `styles.js`), not generic art-style guesses.
 
 **How each post is made:**
 1. A random style is picked from `styles.js`.
-2. Gemini writes a creative, detailed image prompt in that style.
+2. Gemini writes a creative, detailed image prompt in that style — instructed
+   to optimize for genuine engagement (a clear hook, emotional pull, specific
+   sensory detail), not just technical correctness.
 3. Gemini's image model generates the actual image from that prompt.
 4. The image is posted with the prompt text as the caption.
 
@@ -38,9 +42,11 @@ node index.js
 3. Add the three env vars above (check Production + Preview).
 4. Deploy.
 
-`vercel.json` defines two separate daily cron entries (9 AM and 9 PM UTC)
-— each fires once/day, which fits Vercel's Hobby/free-tier cron limit.
-Edit the schedule strings there to change the times.
+`vercel.json` defines four separate daily cron entries, six hours apart
+(00:00, 06:00, 12:00, 18:00 UTC) — each fires once/day, which fits Vercel's
+Hobby/free-tier cron limit (up to 100 entries per project, each capped at
+once/day). Edit the schedule strings there to change times or add more
+entries for higher frequency — just keep each individual entry to once/day.
 
 You can manually trigger a post any time by visiting
 `https://your-project.vercel.app/api/post`.
