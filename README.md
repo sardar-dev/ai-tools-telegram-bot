@@ -11,7 +11,7 @@ worlds, etc. — see `styles.js`), not generic art-style guesses.
 2. Gemini writes a creative, detailed image prompt in that style — instructed
    to optimize for genuine engagement (a clear hook, emotional pull, specific
    sensory detail), not just technical correctness.
-3. Gemini's image model generates the actual image from that prompt.
+3. Pollinations.ai (free, no key needed) generates the actual image from that exact prompt.
 4. The image is posted with the prompt text as the caption.
 
 ## Setup
