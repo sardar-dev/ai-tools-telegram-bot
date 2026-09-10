@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 
-const IMAGE_MODEL = "gemini-3.1-flash-image"; // current Gemini native image generation model
+const IMAGE_MODEL = "gemini-2.5-flash-image"; // "Nano Banana" — has a working free tier, unlike gemini-3.1-flash-image
 
 // Generates an image from a text prompt. Returns { buffer, mimeType }.
 async function generateImage(prompt) {
