@@ -7,12 +7,12 @@ const { postImage } = require("./postToTelegram");
 // -> generate an image from that prompt -> post the image + prompt together.
 async function runPost() {
   const { style, prompt } = await generateImagePrompt();
-  const { buffer, mimeType } = await generateImage(prompt);
+  const { buffer, mimeType, source } = await generateImage(prompt);
   const caption = formatCaption({ style, prompt });
 
   await postImage({ buffer, mimeType, caption });
 
-  return { posted: true, style, prompt };
+  return { posted: true, style, prompt, imageSource: source };
 }
 
 module.exports = { runPost };
