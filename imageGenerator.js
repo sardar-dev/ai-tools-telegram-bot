@@ -41,7 +41,12 @@ async function tryGeminiModel(model, prompt, apiKey) {
 // Free, no-key fallback — used only if every Gemini model above fails.
 // Guarantees a post can always go out even with zero API billing set up.
 async function tryPollinations(prompt) {
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true`;
+  // model=flux: Flux has meaningfully better prompt-following than
+  // Pollinations' default model, especially for flowing natural-language
+  // prompts (not just comma-separated tags). seed=random avoids any
+  // caching collisions if the same prompt text ever repeats.
+  const seed = Math.floor(Math.random() * 2147483647);
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&model=flux&seed=${seed}`;
 
   const res = await fetch(url, { timeout: 30000 });
   if (!res.ok) {
